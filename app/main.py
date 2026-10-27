@@ -6,10 +6,10 @@ review. The human gate in the diagram is a person reading this output, not code.
 from __future__ import annotations
 
 import csv
+import hmac
 import io
-from pathlib import Path
-
 import os
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -32,7 +32,9 @@ def auth(authorization: str | None = Header(default=None)) -> None:
     exposing this to a network, or you are paying for other people's model calls."""
     if not TOKEN:
         return
-    if authorization != f"Bearer {TOKEN}":
+    # compare_digest, not ==, so a wrong token cannot be guessed a byte at a time
+    # from how long the comparison took.
+    if not hmac.compare_digest(authorization or "", f"Bearer {TOKEN}"):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 

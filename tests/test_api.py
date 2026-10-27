@@ -54,3 +54,11 @@ def test_draft_honours_the_model_call_cap():
     ev = [Entry("JE-1", "CC-1", "6200", 100.0, "2026-10-01", "x", "journal")]
     _, _, _, by = draft(Line("CC-1", "6200", 200, 100, 100), None, ev, allow_model=False)
     assert by == "rules"
+
+
+def test_token_auth_rejects_a_wrong_token_and_accepts_the_right_one(monkeypatch):
+    import app.main as m
+    monkeypatch.setattr(m, "TOKEN", "s3cret")
+    assert client.post("/api/demo").status_code == 401
+    assert client.post("/api/demo", headers={"Authorization": "Bearer nope"}).status_code == 401
+    assert client.post("/api/demo", headers={"Authorization": "Bearer s3cret"}).status_code == 200

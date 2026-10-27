@@ -107,7 +107,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 Run the tests:
 
 ```bash
-pytest -q        # 23 passed
+pytest -q        # 24 passed
 ```
 
 ## What the demo returns
