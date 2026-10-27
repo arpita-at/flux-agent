@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import os
 from pathlib import Path
 
 from .evidence import Entry, for_line, load_ledger
@@ -31,11 +32,15 @@ def run(lines: list[Line], ledger: list[Entry], rule: Materiality | None = None,
     flags = flagged(lines, rule)
     drivers = drivers or {}
     out = []
-    for line in flags:
+    # Hard cap on model calls per run. Past this the largest variances are still
+    # drafted by Claude and the tail falls back to deterministic sentences, so a
+    # pathological upload costs a bounded amount instead of an open-ended one.
+    budget_calls = int(os.environ.get("FLUX_MAX_DRAFTS", 25))
+    for i, line in enumerate(flags):
         ev = for_line(ledger, line.cost_centre, line.account)
         key = (line.cost_centre, line.account)
         dec = decompose(*drivers[key]) if key in drivers else None
-        text, cites, gap, by = draft(line, dec, ev)
+        text, cites, gap, by = draft(line, dec, ev, allow_model=i < budget_calls)
         out.append({
             "cost_centre": line.cost_centre, "account": line.account,
             "actual": round(line.actual, 2), "budget": round(line.budget, 2),

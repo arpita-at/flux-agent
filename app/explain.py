@@ -88,12 +88,17 @@ def claude_draft(line: Line, dec: Decomposition | None, ev: list[Entry]) -> str 
         return None
 
 
-def draft(line: Line, dec: Decomposition | None, ev: list[Entry]) -> tuple[str, list[str], bool, str]:
-    """Returns (text, cites, needs_evidence, drafted_by)."""
+def draft(line: Line, dec: Decomposition | None, ev: list[Entry],
+          allow_model: bool = True) -> tuple[str, list[str], bool, str]:
+    """Returns (text, cites, needs_evidence, drafted_by).
+
+    allow_model=False forces the deterministic path. The caller uses it to cap how
+    many model calls one run can make.
+    """
     if not ev:
         return ("", [], True, "rules")
     cites = [e.doc_id for e in ev]
-    text = claude_draft(line, dec, ev)
+    text = claude_draft(line, dec, ev) if allow_model else None
     if text:
         return (text, cites, False, "claude")
     return (rules_draft(line, dec, ev), cites, False, "rules")

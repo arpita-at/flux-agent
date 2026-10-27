@@ -107,7 +107,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 Run the tests:
 
 ```bash
-pytest -q        # 20 passed
+pytest -q        # 23 passed
 ```
 
 ## What the demo returns
@@ -144,6 +144,8 @@ CSV columns: `cost_centre,account,amount` for the three period files, and `doc_i
 **Why not let the model do the matching too?** Because a model right 99% of the time is wrong on a balance sheet, and you cannot write a regression test for a vibe. If it must tie to the penny, it is a rule.
 
 **Is the sample data real?** No. Synthetic, generated for this repo.
+
+**I want to deploy this somewhere.** Set `FLUX_API_TOKEN` first, then send `Authorization: Bearer <token>`. Without it both endpoints are open, and every flagged line can cost one model call, so an open endpoint with a key set is somebody else's bill. Other limits: `FLUX_MAX_BYTES` (2 MB per file), `FLUX_MAX_ROWS` (20,000), `FLUX_MAX_DRAFTS` (25 model calls per run, the tail falls back to deterministic sentences). Materiality is validated too, because `floor=0&pct=0` would flag every line.
 
 ## Licence
 
