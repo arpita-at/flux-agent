@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>flux-agent</title>
+<style>
+ :root{--ink:#0F172A;--mut:#64748B;--line:#E2E8F0;--blue:#2563EB;--bg:#fff}
+ @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#E2E8F0;--mut:#94A3B8;--line:#1E293B;--bg:#0B1220}}
+ *{box-sizing:border-box;margin:0}
+ body{background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,"SF Pro Text",Helvetica,sans-serif;padding:48px 16px}
+ main{max-width:860px;margin:0 auto}
+ h1{font-size:34px;letter-spacing:-.02em}
+ p.lede{color:var(--mut);margin:10px 0 26px;max-width:62ch}
+ button{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:11px 20px;font-size:16px;font-weight:600;cursor:pointer}
+ table{border-collapse:collapse;width:100%;margin-top:24px;font-size:14px}
+ th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+ th{color:var(--mut);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+ td.num{text-align:right;font-variant-numeric:tabular-nums}
+ .tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:2px 7px}
+ .rules{color:var(--blue)} .claude{color:#7C3AED} .gap{color:#EA580C}
+ .sum{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;color:var(--mut);font-size:14px}
+ .sum b{display:block;color:var(--ink);font-size:21px;font-variant-numeric:tabular-nums}
+ code{font:13px ui-monospace,Menlo,monospace;color:var(--mut)}
+</style></head><body><main>
+<h1>flux-agent</h1>
+<p class="lede">Month-end flux commentary. Rules decide what is material and retrieve the evidence. The model only writes the sentence, and only from evidence it was handed. Sample data is synthetic.</p>
+<button id="go">Run the demo</button>
+<div id="out"></div>
+<script>
+const money=n=>n.toLocaleString(undefined,{maximumFractionDigits:0});
+document.getElementById('go').onclick=async()=>{
+  const out=document.getElementById('out');
+  out.innerHTML='<p class="lede">Running…</p>';
+  const r=await fetch('/api/demo',{method:'POST'}); const d=await r.json(); const s=d.summary;
+  out.innerHTML=`<div class="sum">
+    <div>Lines<b>${s.lines}</b></div><div>Flagged<b>${s.flagged}</b></div>
+    <div>Skipped<b>${d.skipped}</b></div>
+    <div>Total variance<b>${money(s.total_variance)}</b></div>
+    <div>Coverage<b>${(s.coverage*100).toFixed(1)}%</b></div></div>
+   <table><thead><tr><th>Cost centre</th><th>Account</th><th class="num">Variance</th><th>Commentary</th><th>Cites</th><th>By</th></tr></thead><tbody>`+
+   d.commentary.map(c=>`<tr><td>${c.cost_centre}</td><td>${c.account}</td>
+     <td class="num">${money(c.variance)}</td>
+     <td>${c.needs_evidence?'<span class="tag gap">needs evidence</span>':c.text}</td>
+     <td><code>${c.cites.join(' ')||'-'}</code></td>
+     <td><span class="tag ${c.drafted_by}">${c.drafted_by}</span></td></tr>`).join('')+
+   `</tbody></table>`;
+};
+</script></main></body></html>

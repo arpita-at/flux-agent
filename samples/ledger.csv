@@ -1,0 +1,8 @@
+doc_id,cost_centre,account,amount,posted_on,description,source
+JE-88120,CC-4100,6200,61400,2026-10-28,Contractor rate uplift effective 01 Oct,journal
+JE-88121,CC-4100,6200,4300,2026-10-29,Two additional contractors onboarded,journal
+INV-55310,CC-4100,6200,2500,2026-10-30,Agency placement fee,invoice
+JE-88140,CC-4200,7100,-33200,2026-10-27,Campaign deferred to November,journal
+INV-55412,CC-4200,7100,-500,2026-10-29,Credit note on cancelled media buy,invoice
+PO-30211,CC-4300,7100,571000,2026-10-31,Annual licence renewal booked in full,po
+JE-88190,CC-4300,7100,7500,2026-10-31,Support uplift on renewal,journal

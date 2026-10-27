@@ -1,0 +1,9 @@
+[project]
+name = "flux-agent"
+version = "0.1.0"
+description = "Month-end flux commentary agent. Deterministic variance and materiality rules, a model only for the sentence."
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
